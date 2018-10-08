@@ -116,7 +116,7 @@ server.publishBuildInfo buildInfo
     }
     //STAGE8
     stage('Deploy @ Prod') {
-
+	dockerCmd "run -d -p 9999:9999 --name 'production' digitaldemo-docker-release-images.jfrog.io/sparktodo-${JOB_NAME}:${releasedVersion}"
     }
   }
 }
