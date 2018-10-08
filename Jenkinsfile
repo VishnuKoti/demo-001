@@ -76,6 +76,16 @@ node('master') {
 	  }
     //STAGE6
     stage('Release') {
+	     withMaven(maven: 'Maven 3') {
+      dir('app') {
+          releasedVersion = getReleasedVersion()
+          withCredentials([usernamePassword(credentialsId: 'github-cred', passwordVariable: 'password', usernameVariable: 'username')]) {
+              sh "git config user.email test@digitaldemo-docker-release-images.jfrog.io.com && git config user.name Jenkins"
+              sh "mvn release:prepare release:perform -Dusername=${username} -Dpassword=${password}"
+          }
+          dockerCmd "build --tag digitaldemo-docker-release-images.jfrog.io/sparktodo-${JOB_NAME}:${releasedVersion} ."
+      }
+  }
 
     }
     //STAGE7
