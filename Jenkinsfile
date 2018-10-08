@@ -26,7 +26,24 @@ node('master') {
 
     //STAGE3
     stage('Deploy & Test') {
+	 dir('app') {
+       dockerCmd "run -d -p 9999:9999 --name 'snapshot' --network='host' digitaldemo-docker-snapshot-images.jfrog.io/sparktodo-${JOB_NAME}:SNAPSHOT"
+   }
 
+   try{
+
+   echo 'Testing Endpoint'
+
+   sleep(time:10,unit:"SECONDS")
+   def get = new URL("http://localhost:9999").openConnection();
+   def getRC = get.getResponseCode();
+   println(getRC);
+   if(getRC.equals(200)) {
+     println(get.getInputStream().getText());
+   }
+   }finally{
+     dockerCmd 'rm -f snapshot'
+   }
     }
 
     //STAGE4
