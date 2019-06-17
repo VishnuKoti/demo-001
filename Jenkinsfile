@@ -60,7 +60,7 @@ node('master') {
  server.upload(uploadSpec)
 
   // Create an Artifactory Docker instance. The instance stores the Artifactory credentials and the Docker daemon host address:
-  def rtDocker = Artifactory.docker server: server, host: "http://localhost:8081"
+  def rtDocker = Artifactory.docker server: server, host: "http://10.0.75.2:8081"
 
   // Push a docker image to Artifactory (here we're pushing hello-world:latest). The push method also expects
   // Artifactory repository name (<target-artifactory-repository>).
@@ -104,7 +104,7 @@ server.upload(uploadSpec)
 
 
 // Create an Artifactory Docker instance. The instance stores the Artifactory credentials and the Docker daemon host address:
-def rtDocker = Artifactory.docker server: server, host: "tcp://localhost:2375"
+def rtDocker = Artifactory.docker server: server, host: "http://10.0.75.2:8081"
 
 // Push a docker image to Artifactory (here we're pushing hello-world:latest). The push method also expects
 // Artifactory repository name (<target-artifactory-repository>).
