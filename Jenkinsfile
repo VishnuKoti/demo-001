@@ -42,7 +42,7 @@ node('master') {
      println(get.getInputStream().getText());
    }
    }finally{
-     dockerCmd 'rm -f spartshot'
+     dockerCmd 'rm -f sparkshot'
    }
     }
 
