@@ -19,7 +19,7 @@ node('master') {
 	withMaven(maven: 'M3') {
     	 dir('app') {
          sh 'mvn clean package'
-         dockerCmd "build --tag digitaldemo-docker-snapshot-images.jfrog.io/sparktodo-${JOB_NAME}:SNAPSHOT ."
+         dockerCmd "build --tag sparkshot-${JOB_NAME}:SNAPSHOT ."
    	  }
 	 }
     }
@@ -27,7 +27,7 @@ node('master') {
     //STAGE3
     stage('Deploy & Test') {
 	 dir('app') {
-       dockerCmd "run -d -p 9999:9999 --name 'snapshot' --network='host' digitaldemo-docker-snapshot-images.jfrog.io/sparktodo-${JOB_NAME}:SNAPSHOT"
+       dockerCmd "run -d -p 9999:9999 --name 'sparkshot' --network='host' sparkshot-${JOB_NAME}:SNAPSHOT"
    }
 
    try{
@@ -42,7 +42,7 @@ node('master') {
      println(get.getInputStream().getText());
    }
    }finally{
-     dockerCmd 'rm -f snapshot'
+     dockerCmd 'rm -f spartshot'
    }
     }
 
@@ -53,7 +53,7 @@ node('master') {
      "files": [
        {
            "pattern": "**/*.jar",
-             "target": "ext-snapshot-local/"
+             "target": "ext-sparkshot-local/"
              }
               ]
                }"""
@@ -64,7 +64,7 @@ node('master') {
 
   // Push a docker image to Artifactory (here we're pushing hello-world:latest). The push method also expects
   // Artifactory repository name (<target-artifactory-repository>).
-  def buildInfo = rtDocker.push "digitaldemo-docker-snapshot-images.jfrog.io/sparktodo-${JOB_NAME}:SNAPSHOT", 'docker-snapshot-images'
+  def buildInfo = rtDocker.push "sparkshot-${JOB_NAME}:SNAPSHOT", 'docker-snapshot-images'
 
   //Publish the build-info to Artifactory:
   server.publishBuildInfo buildInfo
@@ -83,7 +83,7 @@ node('master') {
               sh "git config user.email test@digitaldemo-docker-release-images.jfrog.io.com && git config user.name Jenkins"
               sh "mvn release:prepare release:perform -Dusername=${username} -Dpassword=${password}"
           }
-          dockerCmd "build --tag digitaldemo-docker-release-images.jfrog.io/sparktodo-${JOB_NAME}:${releasedVersion} ."
+          dockerCmd "build --tag sparkshot-${JOB_NAME}:${releasedVersion} ."
       }
   }
 
@@ -108,7 +108,7 @@ def rtDocker = Artifactory.docker server: server, host: "tcp://localhost:2375"
 
 // Push a docker image to Artifactory (here we're pushing hello-world:latest). The push method also expects
 // Artifactory repository name (<target-artifactory-repository>).
-def buildInfo = rtDocker.push "digitaldemo-docker-release-images.jfrog.io/sparktodo-${JOB_NAME}:${releasedVersion}", 'docker-release-images'
+def buildInfo = rtDocker.push "sparkshot-${JOB_NAME}:${releasedVersion}", 'docker-release-images'
 
 //Publish the build-info to Artifactory:
 server.publishBuildInfo buildInfo
@@ -116,7 +116,7 @@ server.publishBuildInfo buildInfo
     }
     //STAGE8
     stage('Deploy @ Prod') {
-	dockerCmd "run -d -p 9999:9999 --name 'production' digitaldemo-docker-release-images.jfrog.io/sparktodo-${JOB_NAME}:${releasedVersion}"
+	dockerCmd "run -d -p 9999:9999 --name 'production' sparkshot-${JOB_NAME}:${releasedVersion}"
     }
   }
 }
