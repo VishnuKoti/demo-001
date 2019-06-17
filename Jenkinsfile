@@ -16,7 +16,7 @@ node('master') {
 
     //STAGE2:
     stage('Build') {
-	withMaven(maven: 'Maven 3') {
+	withMaven(maven: 'M3') {
     	 dir('app') {
          sh 'mvn clean package'
          dockerCmd "build --tag digitaldemo-docker-snapshot-images.jfrog.io/sparktodo-${JOB_NAME}:SNAPSHOT ."
