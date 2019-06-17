@@ -35,7 +35,7 @@ node('master') {
    echo 'Testing Endpoint'
 
    sleep(time:10,unit:"SECONDS")
-   def get = new URL("http://localhost:9999").openConnection();
+   def get = new URL("http://10.0.75.2:9999").openConnection();
    def getRC = get.getResponseCode();
    println(getRC);
    if(getRC.equals(200)) {
@@ -76,7 +76,7 @@ node('master') {
 	  }
     //STAGE6
     stage('Release') {
-	     withMaven(maven: 'Maven 3') {
+	     withMaven(maven: 'M3') {
       dir('app') {
           releasedVersion = getReleasedVersion()
           withCredentials([usernamePassword(credentialsId: 'github-cred', passwordVariable: 'password', usernameVariable: 'username')]) {
